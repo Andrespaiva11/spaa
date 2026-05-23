@@ -123,14 +123,48 @@ export const GlobalStyle = createGlobalStyle`
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    @media (max-width: 768px) {
+      font-size: 1.05rem;
+    }
   }
 
-  h1 { font-size: 3.5rem; }
-  h2 { font-size: 2.8rem; }
-  h3 { font-size: 2.2rem; }
-  h4 { font-size: 1.8rem; }
-  h5 { font-size: 1.5rem; }
-  h6 { font-size: 1.35rem; }
+  h1 {
+    font-size: 3.5rem;
+    @media (max-width: 768px) {
+      font-size: 2.25rem;
+    }
+  }
+  h2 {
+    font-size: 2.8rem;
+    @media (max-width: 768px) {
+      font-size: 1.85rem;
+    }
+  }
+  h3 {
+    font-size: 2.2rem;
+    @media (max-width: 768px) {
+      font-size: 1.55rem;
+    }
+  }
+  h4 {
+    font-size: 1.8rem;
+    @media (max-width: 768px) {
+      font-size: 1.35rem;
+    }
+  }
+  h5 {
+    font-size: 1.5rem;
+    @media (max-width: 768px) {
+      font-size: 1.2rem;
+    }
+  }
+  h6 {
+    font-size: 1.35rem;
+    @media (max-width: 768px) {
+      font-size: 1.1rem;
+    }
+  }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: ${theme.fonts.primary};

@@ -30,6 +30,10 @@ const LoginContainer = styled.div`
   position: relative;
   overflow: hidden;
 
+  @media (max-width: 480px) {
+    padding: 2rem 1.25rem;
+  }
+
   &::before {
     content: '';
     position: absolute;

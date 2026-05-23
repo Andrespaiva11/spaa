@@ -98,6 +98,27 @@ const NavLinks = styled.ul`
   margin: 0;
   padding: 0;
   align-items: center;
+
+  @media (max-width: 768px) {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: rgba(10, 10, 10, 0.98);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(153, 101, 21, 0.2);
+    transition: all ${theme.transitions.normal};
+    max-height: ${props => props.$isOpen ? '85vh' : '0'};
+    opacity: ${props => props.$isOpen ? '1' : '0'};
+    overflow-y: ${props => props.$isOpen ? 'auto' : 'hidden'};
+    pointer-events: ${props => props.$isOpen ? 'auto' : 'none'};
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  }
 `;
 
 const NavLink = styled(Link)`
@@ -140,6 +161,22 @@ const NavLink = styled(Link)`
     color: ${theme.colors.navbarLinkHover};
     text-shadow: 0 0 8px rgba(201, 148, 42, 0.3);
   }
+
+  @media (max-width: 768px) {
+    display: block;
+    width: 100%;
+    padding: 0.85rem 2rem;
+    border-radius: 0;
+
+    &::before {
+      display: none;
+    }
+
+    &:hover {
+      background: rgba(153, 101, 21, 0.15);
+      padding-left: 2.5rem;
+    }
+  }
 `;
 
 const LoginButton = styled(Link)`
@@ -166,11 +203,23 @@ const LoginButton = styled(Link)`
   &:active {
     transform: translateY(0);
   }
+
+  @media (max-width: 768px) {
+    display: block;
+    margin: 0.75rem 2rem;
+    text-align: center;
+    border-radius: ${theme.borderRadius.small};
+  }
 `;
 
 const Dropdown = styled.div`
   position: relative;
   display: inline-block;
+
+  @media (max-width: 768px) {
+    display: block;
+    width: 100%;
+  }
 `;
 
 const DropdownButton = styled.button`
@@ -189,6 +238,20 @@ const DropdownButton = styled.button`
     color: ${theme.colors.navbarLinkHover};
     background: rgba(153, 101, 21, 0.08);
   }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    text-align: left;
+    padding: 0.85rem 2rem;
+    border-radius: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &:hover {
+      background: rgba(153, 101, 21, 0.15);
+    }
+  }
 `;
 
 const DropdownContent = styled.div`
@@ -197,6 +260,7 @@ const DropdownContent = styled.div`
   right: 0;
   background: rgba(20, 20, 20, 0.98);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   min-width: 200px;
   box-shadow: ${theme.shadows.large};
   border-radius: ${theme.borderRadius.medium};
@@ -236,6 +300,45 @@ const DropdownContent = styled.div`
       padding-left: 1.5rem;
     }
   }
+
+  @media (max-width: 768px) {
+    position: static;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    margin-top: 0;
+
+    a, button {
+      padding-left: 3rem;
+      font-size: 1.05rem;
+
+      &:hover {
+        padding-left: 3.5rem;
+        background: rgba(153, 101, 21, 0.1);
+      }
+    }
+  }
+`;
+
+const HamburgerButton = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  color: ${theme.colors.navbarText};
+  font-size: 1.65rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color ${theme.transitions.normal};
+
+  &:hover {
+    color: ${theme.colors.navbarLinkHover};
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+  }
 `;
 
 
@@ -244,11 +347,23 @@ function Navbar({ isAuthenticated = false, user = null, onLogout }) {
   const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
   const [stylistDropdownOpen, setStylistDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Close mobile menu on screen resize to desktop sizes
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Auto-cerrar el menú desplegable del usuario después de 5 segundos de inactividad
@@ -305,40 +420,48 @@ function Navbar({ isAuthenticated = false, user = null, onLogout }) {
   return (
     <NavbarContainer $scrolled={scrolled}>
       <Container>
-        <Brand to="/">✦ Essence De Toi</Brand>
+        <Brand to="/" onClick={() => setIsMobileMenuOpen(false)}>✦ Essence De Toi</Brand>
         
-        <NavLinks>
-          <NavLink to="/">Inicio</NavLink>
-          <NavLink to="/services">Servicios</NavLink>
+        <HamburgerButton onClick={() => setIsMobileMenuOpen(prev => !prev)} aria-label="Menu principal">
+          <i className={isMobileMenuOpen ? 'fas fa-times' : 'fas fa-bars'}></i>
+        </HamburgerButton>
+
+        <NavLinks $isOpen={isMobileMenuOpen}>
+          <NavLink to="/" onClick={() => setIsMobileMenuOpen(false)}>Inicio</NavLink>
+          <NavLink to="/services" onClick={() => setIsMobileMenuOpen(false)}>Servicios</NavLink>
           
           {isAuthenticated && (
             <>
-              <NavLink to="/dashboard">Dashboard</NavLink>
-              <NavLink to="/appointments/my">Mis Citas</NavLink>
+              <NavLink to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</NavLink>
+              <NavLink to="/appointments/my" onClick={() => setIsMobileMenuOpen(false)}>Mis Citas</NavLink>
             </>
           )}
           
-          <NavLink to="/contact">Contáctanos</NavLink>
+          <NavLink to="/contact" onClick={() => setIsMobileMenuOpen(false)}>Contáctanos</NavLink>
           
           {!isAuthenticated && (
             <>
-              <NavLink to="/appointments/new">Agendar Cita</NavLink>
-              <LoginButton to="/login">Iniciar Sesión</LoginButton>
+              <NavLink to="/appointments/new" onClick={() => setIsMobileMenuOpen(false)}>Agendar Cita</NavLink>
+              <LoginButton to="/login" onClick={() => setIsMobileMenuOpen(false)}>Iniciar Sesión</LoginButton>
             </>
           )}
 
           {isAuthenticated && user && (
             <Dropdown>
               <DropdownButton onClick={handleUserDropdownClick}>
-                <i className="fas fa-user-circle" style={{ marginRight: '6px' }}></i>
-                {user.username}
+                <span>
+                  <i className="fas fa-user-circle" style={{ marginRight: '6px' }}></i>
+                  {user.username}
+                </span>
+                <i className={`fas fa-chevron-${userDropdownOpen ? 'up' : 'down'}`} style={{ marginLeft: '8px', fontSize: '0.85rem', opacity: 0.8 }}></i>
               </DropdownButton>
               <DropdownContent isOpen={userDropdownOpen}>
-                <Link to="/profile" onClick={() => setUserDropdownOpen(false)}>Mi Perfil</Link>
+                <Link to="/profile" onClick={() => { setUserDropdownOpen(false); setIsMobileMenuOpen(false); }}>Mi Perfil</Link>
                 <button 
                   onClick={() => {
                     onLogout();
                     setUserDropdownOpen(false);
+                    setIsMobileMenuOpen(false);
                   }}
                   style={{
                     width: '100%',
@@ -361,23 +484,26 @@ function Navbar({ isAuthenticated = false, user = null, onLogout }) {
           {isAuthenticated && user?.role === 'ADMIN' && (
             <Dropdown>
               <DropdownButton onClick={handleAdminDropdownClick}>
-                <i className="fas fa-shield-alt" style={{ marginRight: '6px' }}></i>
-                Admin
+                <span>
+                  <i className="fas fa-shield-alt" style={{ marginRight: '6px' }}></i>
+                  Admin
+                </span>
+                <i className={`fas fa-chevron-${adminDropdownOpen ? 'up' : 'down'}`} style={{ marginLeft: '8px', fontSize: '0.85rem', opacity: 0.8 }}></i>
               </DropdownButton>
               <DropdownContent isOpen={adminDropdownOpen}>
-                <Link to="/admin/dashboard" onClick={() => setAdminDropdownOpen(false)}>
+                <Link to="/admin/dashboard" onClick={() => { setAdminDropdownOpen(false); setIsMobileMenuOpen(false); }}>
                   <i className="fas fa-tachometer-alt" style={{ marginRight: '8px', opacity: 0.7 }}></i>Panel de Admin
                 </Link>
-                <Link to="/admin/users" onClick={() => setAdminDropdownOpen(false)}>
+                <Link to="/admin/users" onClick={() => { setAdminDropdownOpen(false); setIsMobileMenuOpen(false); }}>
                   <i className="fas fa-users-cog" style={{ marginRight: '8px', opacity: 0.7 }}></i>Gestionar Usuarios
                 </Link>
-                <Link to="/admin/services" onClick={() => setAdminDropdownOpen(false)}>
+                <Link to="/admin/services" onClick={() => { setAdminDropdownOpen(false); setIsMobileMenuOpen(false); }}>
                   <i className="fas fa-concierge-bell" style={{ marginRight: '8px', opacity: 0.7 }}></i>Gestionar Servicios
                 </Link>
-                <Link to="/appointments/all" onClick={() => setAdminDropdownOpen(false)}>
+                <Link to="/appointments/all" onClick={() => { setAdminDropdownOpen(false); setIsMobileMenuOpen(false); }}>
                   <i className="fas fa-calendar-alt" style={{ marginRight: '8px', opacity: 0.7 }}></i>Todas las Citas
                 </Link>
-                <Link to="/admin/reports" onClick={() => setAdminDropdownOpen(false)}>
+                <Link to="/admin/reports" onClick={() => { setAdminDropdownOpen(false); setIsMobileMenuOpen(false); }}>
                   <i className="fas fa-chart-line" style={{ marginRight: '8px', opacity: 0.7 }}></i>Reportes
                 </Link>
               </DropdownContent>
@@ -387,13 +513,16 @@ function Navbar({ isAuthenticated = false, user = null, onLogout }) {
           {isAuthenticated && user?.role === 'STYLIST' && (
             <Dropdown>
               <DropdownButton onClick={handleStylistDropdownClick}>
-                <i className="fas fa-cut" style={{ marginRight: '6px' }}></i>
-                Estilista
+                <span>
+                  <i className="fas fa-cut" style={{ marginRight: '6px' }}></i>
+                  Estilista
+                </span>
+                <i className={`fas fa-chevron-${stylistDropdownOpen ? 'up' : 'down'}`} style={{ marginLeft: '8px', fontSize: '0.85rem', opacity: 0.8 }}></i>
               </DropdownButton>
               <DropdownContent isOpen={stylistDropdownOpen}>
-                <Link to="/stylist/dashboard" onClick={() => setStylistDropdownOpen(false)}>Dashboard Estilista</Link>
-                <Link to="/stylist/appointments" onClick={() => setStylistDropdownOpen(false)}>Mis Citas</Link>
-                <Link to="/stylist/schedule" onClick={() => setStylistDropdownOpen(false)}>Mi Horario</Link>
+                <Link to="/stylist/dashboard" onClick={() => { setStylistDropdownOpen(false); setIsMobileMenuOpen(false); }}>Dashboard Estilista</Link>
+                <Link to="/stylist/appointments" onClick={() => { setStylistDropdownOpen(false); setIsMobileMenuOpen(false); }}>Mis Citas</Link>
+                <Link to="/stylist/schedule" onClick={() => { setStylistDropdownOpen(false); setIsMobileMenuOpen(false); }}>Mi Horario</Link>
               </DropdownContent>
             </Dropdown>
           )}
