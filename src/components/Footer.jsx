@@ -205,10 +205,10 @@ function Footer() {
             <h3>✦ Essence De Toi</h3>
             <p>Tu oasis de belleza y bienestar. Transformamos tu imagen con dedicación, productos premium y pasión por lo que hacemos.</p>
             <SocialLinks>
-              <SocialIcon href="#" aria-label="Facebook" style={{ '--i': 0 }}><i className="fab fa-facebook-f"></i></SocialIcon>
-              <SocialIcon href="#" aria-label="Instagram" style={{ '--i': 1 }}><i className="fab fa-instagram"></i></SocialIcon>
-              <SocialIcon href="#" aria-label="WhatsApp" style={{ '--i': 2 }}><i className="fab fa-whatsapp"></i></SocialIcon>
-              <SocialIcon href="#" aria-label="TikTok" style={{ '--i': 3 }}><i className="fab fa-tiktok"></i></SocialIcon>
+              <SocialIcon href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ '--i': 0 }}><i className="fab fa-facebook-f"></i></SocialIcon>
+              <SocialIcon href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ '--i': 1 }}><i className="fab fa-instagram"></i></SocialIcon>
+              <SocialIcon href="https://wa.me/573123456789" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style={{ '--i': 2 }}><i className="fab fa-whatsapp"></i></SocialIcon>
+              <SocialIcon href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ '--i': 3 }}><i className="fab fa-tiktok"></i></SocialIcon>
             </SocialLinks>
           </FooterBrand>
 

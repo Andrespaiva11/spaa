@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { theme, fadeInUp } from '../styles/theme';
 
@@ -124,6 +126,43 @@ const ServiceDescription = styled.p`
   font-size: 1.25rem;
 `;
 
+const ServiceFooter = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0,0,0,0.07);
+`;
+
+const BookButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: linear-gradient(135deg, ${theme.colors.primaryDark}, ${theme.colors.accent});
+  color: #fff;
+  border: none;
+  border-radius: ${theme.borderRadius.pill};
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 14px rgba(153,101,21,0.3);
+  white-space: nowrap;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 22px rgba(201,148,42,0.5);
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 const NoServices = styled.div`
   text-align: center;
   padding: 3rem;
@@ -138,14 +177,14 @@ const sampleServices = [
     id: 1,
     name: 'Manicura Clásica',
     description: 'Cuidado completo de uñas con esmalte de alta calidad',
-    price: '$25.000',
+    price: '$30.000',
     image: '/images/services/manicura_clasica.jpg'
   },
   {
     id: 2,
     name: 'Tintura',
     description: 'Coloración profesional con productos premium',
-    price: '$80.000',
+    price: '$150.000',
     image: '/images/services/tintura.webp'
   },
   {
@@ -166,19 +205,36 @@ const sampleServices = [
     id: 5,
     name: 'Peinado de Evento',
     description: 'Peinado elegante para ocasiones especiales',
-    price: '$55.000',
+    price: '$200.000',
     image: '/images/services/peinado_evento.jpg'
   },
   {
     id: 6,
-    name: 'Masaje Relajante',
-    description: 'Masaje terapéutico para aliviar el estrés',
+    name: 'Pedicure',
+    description: 'Pedicure profesional para cuidar, hidratar y embellecer tus pies',
     price: '$70.000',
-    image: '/images/services/masaje.jpg'
+    image: '/images/services/pedicure.jpg'
   },
 ];
 
 function Services() {
+  const [services, setServices] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedServices = localStorage.getItem('services');
+    if (!storedServices) {
+      localStorage.setItem('services', JSON.stringify(sampleServices));
+      setServices(sampleServices);
+    } else {
+      setServices(JSON.parse(storedServices));
+    }
+  }, []);
+
+  const handleBook = (serviceName) => {
+    navigate('/appointments/new', { state: { service: serviceName } });
+  };
+
   return (
     <ServicesContainer>
       <Header>
@@ -186,14 +242,14 @@ function Services() {
         <Title>Nuestros Servicios</Title>
         <Subtitle>Descubre todos los tratamientos que tenemos para ti</Subtitle>
       </Header>
-      
-      {sampleServices.length === 0 ? (
+
+      {services.length === 0 ? (
         <NoServices>
           Actualmente no hay servicios para mostrar. ¡Vuelve pronto!
         </NoServices>
       ) : (
         <ServicesGrid>
-          {sampleServices.map((service, index) => (
+          {services.map((service, index) => (
             <ServiceCard key={service.id} $delay={`${index * 0.1}s`}>
               <ImageWrapper>
                 <ServiceImage $image={service.image}>
@@ -204,6 +260,14 @@ function Services() {
               <ServiceContent>
                 <ServiceName>{service.name}</ServiceName>
                 <ServiceDescription>{service.description}</ServiceDescription>
+                <ServiceFooter>
+                  <BookButton
+                    id={`book-service-${service.id}`}
+                    onClick={() => handleBook(service.name)}
+                  >
+                    📅 Agendar
+                  </BookButton>
+                </ServiceFooter>
               </ServiceContent>
             </ServiceCard>
           ))}

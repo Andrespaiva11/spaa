@@ -251,6 +251,57 @@ function Navbar({ isAuthenticated = false, user = null, onLogout }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Auto-cerrar el menú desplegable del usuario después de 5 segundos de inactividad
+  useEffect(() => {
+    let timer;
+    if (userDropdownOpen) {
+      timer = setTimeout(() => {
+        setUserDropdownOpen(false);
+      }, 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [userDropdownOpen]);
+
+  // Auto-cerrar el menú desplegable del admin después de 5 segundos de inactividad
+  useEffect(() => {
+    let timer;
+    if (adminDropdownOpen) {
+      timer = setTimeout(() => {
+        setAdminDropdownOpen(false);
+      }, 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [adminDropdownOpen]);
+
+  // Auto-cerrar el menú desplegable del estilista después de 5 segundos de inactividad
+  useEffect(() => {
+    let timer;
+    if (stylistDropdownOpen) {
+      timer = setTimeout(() => {
+        setStylistDropdownOpen(false);
+      }, 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [stylistDropdownOpen]);
+
+  const handleUserDropdownClick = () => {
+    setUserDropdownOpen(prev => !prev);
+    setAdminDropdownOpen(false);
+    setStylistDropdownOpen(false);
+  };
+
+  const handleAdminDropdownClick = () => {
+    setAdminDropdownOpen(prev => !prev);
+    setUserDropdownOpen(false);
+    setStylistDropdownOpen(false);
+  };
+
+  const handleStylistDropdownClick = () => {
+    setStylistDropdownOpen(prev => !prev);
+    setUserDropdownOpen(false);
+    setAdminDropdownOpen(false);
+  };
+
   return (
     <NavbarContainer $scrolled={scrolled}>
       <Container>
@@ -278,14 +329,17 @@ function Navbar({ isAuthenticated = false, user = null, onLogout }) {
 
           {isAuthenticated && user && (
             <Dropdown>
-              <DropdownButton onClick={() => setUserDropdownOpen(!userDropdownOpen)}>
+              <DropdownButton onClick={handleUserDropdownClick}>
                 <i className="fas fa-user-circle" style={{ marginRight: '6px' }}></i>
                 {user.username}
               </DropdownButton>
               <DropdownContent isOpen={userDropdownOpen}>
-                <Link to="/profile">Mi Perfil</Link>
+                <Link to="/profile" onClick={() => setUserDropdownOpen(false)}>Mi Perfil</Link>
                 <button 
-                  onClick={onLogout}
+                  onClick={() => {
+                    onLogout();
+                    setUserDropdownOpen(false);
+                  }}
                   style={{
                     width: '100%',
                     border: 'none',
@@ -306,28 +360,40 @@ function Navbar({ isAuthenticated = false, user = null, onLogout }) {
 
           {isAuthenticated && user?.role === 'ADMIN' && (
             <Dropdown>
-              <DropdownButton onClick={() => setAdminDropdownOpen(!adminDropdownOpen)}>
+              <DropdownButton onClick={handleAdminDropdownClick}>
                 <i className="fas fa-shield-alt" style={{ marginRight: '6px' }}></i>
                 Admin
               </DropdownButton>
               <DropdownContent isOpen={adminDropdownOpen}>
-                <Link to="/admin/dashboard">Panel de Admin</Link>
-                <Link to="/admin/users">Gestionar Usuarios</Link>
-                <Link to="/appointments/all">Todas las Citas</Link>
+                <Link to="/admin/dashboard" onClick={() => setAdminDropdownOpen(false)}>
+                  <i className="fas fa-tachometer-alt" style={{ marginRight: '8px', opacity: 0.7 }}></i>Panel de Admin
+                </Link>
+                <Link to="/admin/users" onClick={() => setAdminDropdownOpen(false)}>
+                  <i className="fas fa-users-cog" style={{ marginRight: '8px', opacity: 0.7 }}></i>Gestionar Usuarios
+                </Link>
+                <Link to="/admin/services" onClick={() => setAdminDropdownOpen(false)}>
+                  <i className="fas fa-concierge-bell" style={{ marginRight: '8px', opacity: 0.7 }}></i>Gestionar Servicios
+                </Link>
+                <Link to="/appointments/all" onClick={() => setAdminDropdownOpen(false)}>
+                  <i className="fas fa-calendar-alt" style={{ marginRight: '8px', opacity: 0.7 }}></i>Todas las Citas
+                </Link>
+                <Link to="/admin/reports" onClick={() => setAdminDropdownOpen(false)}>
+                  <i className="fas fa-chart-line" style={{ marginRight: '8px', opacity: 0.7 }}></i>Reportes
+                </Link>
               </DropdownContent>
             </Dropdown>
           )}
 
           {isAuthenticated && user?.role === 'STYLIST' && (
             <Dropdown>
-              <DropdownButton onClick={() => setStylistDropdownOpen(!stylistDropdownOpen)}>
+              <DropdownButton onClick={handleStylistDropdownClick}>
                 <i className="fas fa-cut" style={{ marginRight: '6px' }}></i>
                 Estilista
               </DropdownButton>
               <DropdownContent isOpen={stylistDropdownOpen}>
-                <Link to="/stylist/dashboard">Dashboard Estilista</Link>
-                <Link to="/stylist/appointments">Mis Citas</Link>
-                <Link to="/stylist/schedule">Mi Horario</Link>
+                <Link to="/stylist/dashboard" onClick={() => setStylistDropdownOpen(false)}>Dashboard Estilista</Link>
+                <Link to="/stylist/appointments" onClick={() => setStylistDropdownOpen(false)}>Mis Citas</Link>
+                <Link to="/stylist/schedule" onClick={() => setStylistDropdownOpen(false)}>Mi Horario</Link>
               </DropdownContent>
             </Dropdown>
           )}

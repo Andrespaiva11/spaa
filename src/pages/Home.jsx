@@ -532,9 +532,78 @@ const ContactCardText = styled.div`
   }
 `;
 
+/* ─── MAP ─── */
+const MapContainer = styled.div`
+  position: relative;
+  margin-top: 2rem;
+  height: 320px;
+  border-radius: ${theme.borderRadius.small};
+  overflow: hidden;
+  border: 2px solid rgba(153, 101, 21, 0.35);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  transition: border-color ${theme.transitions.normal};
+  background: rgba(18, 14, 10, 0.95);
+
+  &:hover {
+    border-color: rgba(153, 101, 21, 0.65);
+  }
+`;
+
+const MapSkeleton = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(110deg, #120e0a 8%, #1f1710 18%, #120e0a 33%);
+  background-size: 200% 100%;
+  animation: shine 1.8s linear infinite;
+  color: ${theme.colors.navbarLinkHover};
+  font-family: ${theme.fonts.secondary};
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  gap: 0.75rem;
+  opacity: ${props => props.$loaded ? 0 : 1};
+  pointer-events: none;
+  transition: opacity 0.6s ease-out;
+  z-index: 1;
+
+  @keyframes shine {
+    to {
+      background-position-x: -200%;
+    }
+  }
+
+  i {
+    font-size: 1.6rem;
+    color: ${theme.colors.primary};
+  }
+`;
+
+const MapIframe = styled.iframe`
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: none;
+  filter: invert(90%) hue-rotate(180deg) contrast(120%) brightness(0.9);
+  opacity: ${props => props.$loaded ? 1 : 0};
+  transition: opacity 0.8s ease-in-out;
+`;
+
+const MapLabel = styled.p`
+  font-size: 1rem;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+  margin-top: 0.75rem;
+  letter-spacing: 0.5px;
+`;
+
 /* ─── COMPONENT ─── */
 function Home({ isAuthenticated }) {
   const [currentBg, setCurrentBg] = useState(0);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
     // First transition happens quickly, then regular interval
@@ -696,6 +765,23 @@ function Home({ isAuthenticated }) {
               </ContactCardText>
             </ContactCard>
           </ContactGrid>
+
+          <MapContainer>
+            <MapSkeleton $loaded={mapLoaded}>
+              <i className="fas fa-spinner fa-spin"></i>
+              Cargando mapa...
+            </MapSkeleton>
+            <MapIframe
+              title="Ubicación Essence De Toi - Neiva"
+              src="https://maps.google.com/maps?q=Neiva,+Huila,+Colombia&t=&z=13&ie=UTF8&iwloc=B&output=embed"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              $loaded={mapLoaded}
+              onLoad={() => setMapLoaded(true)}
+            />
+          </MapContainer>
+          <MapLabel>📍 Neiva, Huila, Colombia</MapLabel>
         </ContactWrapper>
       </Section>
     </>

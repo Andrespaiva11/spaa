@@ -258,15 +258,23 @@ function Register({ onRegister }) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
 
+    if (formData.phoneNumber && !/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = 'El número de teléfono no es válido';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let val = value;
+    if (name === 'fullName') {
+      val = value.replace(/[0-9]/g, '');
+    }
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: val
     }));
     // Limpiar error del campo cuando el usuario escribe
     if (errors[name]) {
@@ -279,7 +287,7 @@ function Register({ onRegister }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -293,13 +301,14 @@ function Register({ onRegister }) {
         username: formData.username,
         fullName: formData.fullName,
         email: formData.email,
+        password: formData.password,
         phoneNumber: formData.phoneNumber,
         role: 'CLIENT',
       };
       onRegister(userData);
       navigate('/login');
     } catch (err) {
-      setErrors({ general: 'Error al registrar usuario. Por favor, intenta nuevamente.' });
+      setErrors({ general: err.message || 'Error al registrar usuario. Por favor, intenta nuevamente.' });
     } finally {
       setLoading(false);
     }
@@ -313,9 +322,9 @@ function Register({ onRegister }) {
           <Title>Crear una Cuenta</Title>
           <TitleSub>Únete a Essence De Toi</TitleSub>
         </LogoArea>
-        
+
         {errors.general && <Alert><i className="fas fa-exclamation-circle"></i>{errors.general}</Alert>}
-        
+
         <Form onSubmit={handleSubmit}>
           <FormRow>
             <FormGroup>
@@ -405,7 +414,9 @@ function Register({ onRegister }) {
               placeholder="+57 300 000 0000"
               value={formData.phoneNumber}
               onChange={handleChange}
+              $error={!!errors.phoneNumber}
             />
+            {errors.phoneNumber && <ErrorText><i className="fas fa-exclamation-circle"></i>{errors.phoneNumber}</ErrorText>}
           </FormGroup>
 
           <SubmitButton type="submit" disabled={loading}>
@@ -418,7 +429,7 @@ function Register({ onRegister }) {
         </Form>
 
         <Divider><span>o</span></Divider>
-        
+
         <LoginLink>
           ¿Ya tienes cuenta? <StyledLink to="/login">Inicia sesión aquí</StyledLink>
         </LoginLink>

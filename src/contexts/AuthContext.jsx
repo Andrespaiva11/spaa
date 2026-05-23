@@ -43,9 +43,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (username, password) => {
-    // Buscar usuario en los usuarios predeterminados
-    const foundUser = PREDEFINED_USERS.find(
-      u => u.username === username && u.password === password
+    const storedUsers = localStorage.getItem('users');
+    const userList = storedUsers ? JSON.parse(storedUsers) : PREDEFINED_USERS;
+
+    const foundUser = userList.find(
+      u => u.username.toLowerCase() === username.toLowerCase() && u.password === password
     );
 
     if (foundUser) {
@@ -71,9 +73,15 @@ export function AuthProvider({ children }) {
   };
 
   const register = (userData) => {
-    // Aquí iría la lógica de registro
-    // Por ahora, solo guardamos los datos
-    localStorage.setItem('user', JSON.stringify(userData));
+    const storedUsers = localStorage.getItem('users');
+    const userList = storedUsers ? JSON.parse(storedUsers) : [...PREDEFINED_USERS];
+
+    if (userList.some(u => u.username.toLowerCase() === userData.username.toLowerCase())) {
+      throw new Error('El nombre de usuario ya existe');
+    }
+
+    userList.push(userData);
+    localStorage.setItem('users', JSON.stringify(userList));
   };
 
   return (

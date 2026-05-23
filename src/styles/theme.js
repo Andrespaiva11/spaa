@@ -24,7 +24,7 @@ export const theme = {
   },
   fonts: {
     primary: "'Cormorant Garamond', Georgia, serif",
-    secondary: "'Cormorant Garamond', Georgia, serif",
+    secondary: "'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
   spacing: {
     xs: '0.25rem',
@@ -100,6 +100,9 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   html {
@@ -113,7 +116,7 @@ export const GlobalStyle = createGlobalStyle`
 
   body {
     font-family: ${theme.fonts.secondary};
-    font-size: 1.35rem;
+    font-size: 1.2rem;
     background-color: #FAF7F2;
     color: ${theme.colors.text};
     line-height: 1.65;
